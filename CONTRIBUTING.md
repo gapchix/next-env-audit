@@ -24,7 +24,9 @@ npm run fixture:build     # next build
 npm test                  # now includes the integration + CLI tests
 ```
 
-The fixture app ([fixtures/basic-app](./fixtures/basic-app)) has one route per scenario the auditor must classify: static + server-only var (the bug), static + `NEXT_PUBLIC_*`, dynamic + server-only var (fine), and static + allowlisted var. If you add a detection capability, add a route that exercises it.
+The fixture app ([fixtures/basic-app](./fixtures/basic-app)) has one route per scenario the auditor must classify: static + server-only var (the bug), static + `NEXT_PUBLIC_*`, `generateStaticParams` pages, dynamic + server-only var (fine), and static + allowlisted var. If you add a detection capability, add a route that exercises it.
+
+With the fixture built, `npm run demo` runs the CLI against it — handy for eyeballing report changes. `npm run svg` regenerates `docs/report.svg` (the README hero image) from that same output; rerun it whenever report formatting changes.
 
 CI runs the integration suite against both `next@latest` and `next@canary` (canary is allowed to fail — it's an early-warning signal, not a gate).
 

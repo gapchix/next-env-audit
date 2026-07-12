@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="737" height="682" viewBox="0 0 737 682" role="img" aria-label="next-env-audit terminal report: one error, two warnings, one info, one allowlisted finding" font-family="ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" font-size="13">
+  <rect width="737" height="682" rx="10" fill="#0d1117" stroke="#30363d"/>
+  <circle cx="24" cy="24" r="6" fill="#ff5f57"/>
+  <circle cx="44" cy="24" r="6" fill="#febc2e"/>
+  <circle cx="64" cy="24" r="6" fill="#28c840"/>
+  <text x="368.5" y="28" text-anchor="middle" fill="#8b949e">npx next-env-audit</text>
+  <text x="24" y="71" xml:space="preserve"><tspan fill="#f0f6fc" font-weight="600">next-env-audit v0.1.0</tspan></text>
+  <text x="24" y="91" xml:space="preserve"><tspan fill="#8b949e">audited ~/my-app/.next — 6 routes, 5 prerendered</tspan></text>
+  <text x="24" y="131" xml:space="preserve"><tspan fill="#f0f6fc" font-weight="600">server bake · env vars read by statically prerendered routes</tspan></text>
+  <text x="24" y="171" xml:space="preserve"><tspan fill="#c9d1d9">  </tspan><tspan fill="#ff7b72">✖</tspan><tspan fill="#c9d1d9">  </tspan><tspan fill="#f0f6fc" font-weight="600">/static-secret</tspan><tspan fill="#c9d1d9"> reads </tspan><tspan fill="#f0f6fc" font-weight="600">CMS_TOKEN</tspan><tspan fill="#c9d1d9"> — not set in the audit environment</tspan></text>
+  <text x="24" y="191" xml:space="preserve"><tspan fill="#8b949e">     If it was also unset when `next build` ran, this route was prerendered with missing</tspan></text>
+  <text x="24" y="211" xml:space="preserve"><tspan fill="#8b949e">     data — while the build stayed green.</tspan></text>
+  <text x="24" y="231" xml:space="preserve"><tspan fill="#8b949e">     fix: `export const dynamic = 'force-dynamic'`, set CMS_TOKEN at build time,</tspan></text>
+  <text x="24" y="251" xml:space="preserve"><tspan fill="#8b949e">     or allowlist it in next-env-audit.config.json if the bake is intentional.</tspan></text>
+  <text x="24" y="291" xml:space="preserve"><tspan fill="#c9d1d9">  </tspan><tspan fill="#d29922">⚠</tspan><tspan fill="#c9d1d9">  </tspan><tspan fill="#f0f6fc" font-weight="600">/posts/[slug]</tspan><tspan fill="#c9d1d9"> reads </tspan><tspan fill="#f0f6fc" font-weight="600">POSTS_SOURCE_URL</tspan><tspan fill="#c9d1d9"> — value frozen at build time</tspan></text>
+  <text x="24" y="311" xml:space="preserve"><tspan fill="#8b949e">     Whatever value the variable had at build time is baked into the prerendered page.</tspan></text>
+  <text x="24" y="331" xml:space="preserve"><tspan fill="#8b949e">     Rotating or changing it does not update this route without a rebuild.</tspan></text>
+  <text x="24" y="371" xml:space="preserve"><tspan fill="#f0f6fc" font-weight="600">client bake · NEXT_PUBLIC_* values in browser bundles</tspan></text>
+  <text x="24" y="411" xml:space="preserve"><tspan fill="#c9d1d9">  </tspan><tspan fill="#d29922">⚠</tspan><tspan fill="#c9d1d9">  </tspan><tspan fill="#f0f6fc" font-weight="600">NEXT_PUBLIC_MISSING_FLAG</tspan><tspan fill="#c9d1d9"> referenced in 1 client chunk but never inlined</tspan></text>
+  <text x="24" y="431" xml:space="preserve"><tspan fill="#8b949e">     Not set at build time, so nothing was inlined — the reference is undefined in</tspan></text>
+  <text x="24" y="451" xml:space="preserve"><tspan fill="#8b949e">     the browser.</tspan></text>
+  <text x="24" y="491" xml:space="preserve"><tspan fill="#c9d1d9">  </tspan><tspan fill="#39c5cf">ℹ</tspan><tspan fill="#c9d1d9">  </tspan><tspan fill="#f0f6fc" font-weight="600">NEXT_PUBLIC_API_URL</tspan><tspan fill="#c9d1d9"> = "https://api.fixture.example" — inlined into 1 chunk</tspan></text>
+  <text x="24" y="511" xml:space="preserve"><tspan fill="#8b949e">     Frozen into this build artifact: promoting the same build to another environment</tspan></text>
+  <text x="24" y="531" xml:space="preserve"><tspan fill="#8b949e">     carries this value along.</tspan></text>
+  <text x="24" y="571" xml:space="preserve"><tspan fill="#f0f6fc" font-weight="600">allowlisted</tspan></text>
+  <text x="24" y="591" xml:space="preserve"><tspan fill="#c9d1d9">  </tspan><tspan fill="#3fb950">✓</tspan><tspan fill="#c9d1d9">  /static-allowlisted · </tspan><tspan fill="#f0f6fc" font-weight="600">BUILD_INFO</tspan><tspan fill="#c9d1d9"> — intentional build-time stamp</tspan></text>
+  <text x="24" y="631" xml:space="preserve"><tspan fill="#c9d1d9">1 error · 2 warnings · 1 info · 1 allowlisted</tspan></text>
+  <text x="24" y="651" xml:space="preserve"><tspan fill="#8b949e">report-only mode — pass --fail-on server-bake,client-bake to gate CI</tspan></text>
+</svg>

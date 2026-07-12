@@ -7,6 +7,10 @@
 
 Your build was green. Your prod pages are empty. Here's why.
 
+<p align="center">
+  <img src="docs/report.svg" alt="Terminal report showing an error for a static route reading an unset server env var, a warning for a value frozen at build time, client-bundle findings, and an allowlisted build stamp" width="737">
+</p>
+
 ## The war story
 
 A production site fetched its content from a headless CMS. The CMS routes were fully static — server components with no dynamic APIs, so Next.js prerendered them at build time. The CMS token was configured as a **runtime** secret, so during `next build` it simply wasn't there.
@@ -14,6 +18,8 @@ A production site fetched its content from a headless CMS. The CMS routes were f
 Result: every CMS page prerendered **empty**. No error, no warning, no failed build. The pipeline was green, the deploy went out, and the pages served nothing until someone noticed. The fix was one line (`export const dynamic = 'force-dynamic'`) — but nothing in the toolchain could have pointed at it.
 
 `next-env-audit` is that missing check. Run it right after `next build` and it tells you which prerendered routes read env vars that were frozen (or absent) at build time, and which `NEXT_PUBLIC_*` values got inlined into your client bundles.
+
+And it's not hypothetical: this tool was validated by **replaying that incident** — the affected codebase restored to its pre-fix state, rebuilt, audited — and it flags the exact route with an error. The [fixture app](./fixtures/basic-app) in this repo reproduces the same scenario in miniature, asserted by the integration suite on every CI run against `next@latest` and `next@canary`.
 
 ## Quickstart
 
@@ -78,6 +84,20 @@ What actually happened to your `NEXT_PUBLIC_*` vars in the browser bundles:
 
 Works with both **webpack and Turbopack** build output — including Turbopack's process-polyfill rewrites that hide surviving references from a naive `process.env` grep.
 
+### Finding types at a glance
+
+| Check       | Finding                                         | Severity  | What it means                                                      |
+| ----------- | ----------------------------------------------- | --------- | ------------------------------------------------------------------ |
+| server-bake | static route reads var, **unset** at audit time | ✖ error   | route was most likely prerendered with missing data                |
+| server-bake | static route reads var, set at audit time       | ⚠ warning | value frozen into the page; changing it requires a rebuild         |
+| server-bake | ISR route reads var (unset / set)               | ⚠ / ℹ     | build-time render served until first revalidation, then self-heals |
+| client-bake | `not-inlined` — reference survived the build    | ⚠ warning | `undefined` in the browser (unset at build, or dynamic access)     |
+| client-bake | `inlined` — value found in chunks               | ℹ info    | frozen into this build artifact                                    |
+| client-bake | `not-found` — set at build, value absent        | ℹ info    | unused in client code, or transformed before bundling              |
+| client-bake | `unverified` — value too short to locate        | ℹ info    | reported honestly instead of guessed                               |
+
+Only errors and warnings can fail the build (via `--fail-on`); info findings are inventory.
+
 ## Usage
 
 ```
@@ -111,6 +131,51 @@ const result = runAudit({ dir: './my-app' });
 for (const finding of result.findings) console.log(finding.message);
 if (shouldFail(result, ['server-bake'])) process.exit(1);
 ```
+
+## Recipes
+
+### GitHub Actions gate
+
+The audit must run in the **same job and environment** as the build — that's what makes the "was it set at build time" signal trustworthy:
+
+```yaml
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: npx next build
+      - run: npx next-env-audit --fail-on server-bake
+```
+
+### Monorepo
+
+Point it at the app directory (the one containing `.next`):
+
+```bash
+npx next-env-audit apps/web
+```
+
+### Machine-readable output
+
+`--json` emits the full result — findings, allowlisted entries, route classification:
+
+```bash
+npx next-env-audit --json | jq '.findings[] | select(.severity == "error")'
+```
+
+### Docker / "build once, deploy many"
+
+If you build one image and promote it across environments, run the audit as part of the image build:
+
+```dockerfile
+RUN npx next build && npx next-env-audit --fail-on client-bake
+```
+
+The `inlined` table is the exact list of values frozen into that image — anything there will **not** change between staging and prod, no matter what env you inject at runtime. The `not-inlined` warnings catch vars that missed the build entirely. (If you need genuinely runtime-configurable public vars, pair this with [`next-runtime-env`](https://github.com/expatfile/next-runtime-env) — see the comparison below.)
 
 ## Configuration
 
@@ -164,6 +229,23 @@ They prevent or work around; this **detects**. Use them together.
 - Vars prefixed `NEXT_` (other than the `NEXT_PUBLIC_*` client check) are treated as framework-owned and ignored.
 - Very short `NEXT_PUBLIC_*` values (`"1"`, `"on"`) can't be reliably located in minified bundles — reported as unverified instead of guessed.
 - Shared server chunks are attributed to every route that references them; extremely aggressive chunk sharing may over-attribute.
+
+## FAQ
+
+**A var I definitely set is reported as "referenced but never inlined" — why?**
+Set _now_ is not the same as set _when `next build` ran_ (different shell, CI step, or Docker layer). The other cause is dynamic access — `process.env[name]` or a computed key — which Next.js never inlines, even for vars that are set. Either way the browser sees `undefined`.
+
+**Why is my `NEXT_PUBLIC_` var "not found in any client chunk"?**
+Most often it's only read in server components — that code never ships to the browser, so there's nothing to inline into client chunks (reads in server code are still covered by the server-bake check). It can also mean the value is transformed before bundling (concatenated, wrapped in `new URL(...)`), which makes the literal unfindable.
+
+**Does it work with Turbopack builds?**
+Yes — Turbopack (the Next 16 default) and webpack are both supported, including per-route attribution. CI runs the integration suite against `next@latest` and `next@canary` to catch output-format drift early.
+
+**My static route is flagged but the bake is intentional. Now what?**
+Add an `allow` entry with a `reason` (see [Configuration](#configuration)) — it moves to the allowlisted section of the report and never fails the build, while staying visible.
+
+**Does a clean report guarantee I have no env bugs?**
+No. This is a heuristic postbuild check — see [Limitations](#limitations-v1). It's designed to catch the common failure classes cheaply, not to be a proof.
 
 ## Roadmap
 

@@ -50,6 +50,8 @@
     "format": "prettier --write .",
     "fixture:install": "npm install --prefix fixtures/basic-app",
     "fixture:build": "npm run build --prefix fixtures/basic-app",
+    "demo": "node dist/cli.js fixtures/basic-app",
+    "svg": "node scripts/render-report-svg.mjs",
     "prepublishOnly": "npm run lint && npm run typecheck && npm run build && npm test"
   },
   "dependencies": {
