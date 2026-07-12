@@ -1,0 +1,13 @@
+{
+  "name": "next-env-audit-fixture-basic",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "build": "next build"
+  },
+  "dependencies": {
+    "next": "latest",
+    "react": "latest",
+    "react-dom": "latest"
+  }
+}

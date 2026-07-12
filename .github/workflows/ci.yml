@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    name: lint + unit (node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [20, 22, 24]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run build
+      - run: npm test
+
+  integration:
+    name: integration (next@${{ matrix.next }})
+    runs-on: ubuntu-latest
+    continue-on-error: ${{ matrix.next == 'canary' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        next: [latest, canary]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npm run fixture:install
+      - if: matrix.next == 'canary'
+        run: npm install --prefix fixtures/basic-app next@canary
+      - run: npm run fixture:build
+      - run: npm test

@@ -1,0 +1,5 @@
+dist/
+coverage/
+fixtures/basic-app/.next/
+fixtures/basic-app/node_modules/
+package-lock.json

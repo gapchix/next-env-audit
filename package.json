@@ -1,0 +1,68 @@
+{
+  "name": "next-env-audit",
+  "version": "0.1.0",
+  "description": "Postbuild auditor for Next.js: detects env var values silently baked into (or missing from) statically prerendered routes and client bundles.",
+  "keywords": [
+    "nextjs",
+    "next",
+    "env",
+    "environment-variables",
+    "audit",
+    "ssg",
+    "prerender",
+    "static",
+    "ci",
+    "build"
+  ],
+  "license": "MIT",
+  "author": "Vladislav Gapchinsky",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gapchix/next-env-audit.git"
+  },
+  "bugs": "https://github.com/gapchix/next-env-audit/issues",
+  "homepage": "https://github.com/gapchix/next-env-audit#readme",
+  "type": "module",
+  "bin": {
+    "next-env-audit": "./dist/cli.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint . && prettier --check .",
+    "format": "prettier --write .",
+    "fixture:install": "npm install --prefix fixtures/basic-app",
+    "fixture:build": "npm run build --prefix fixtures/basic-app",
+    "prepublishOnly": "npm run lint && npm run typecheck && npm run build && npm test"
+  },
+  "dependencies": {
+    "picocolors": "^1.1.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^26.1.1",
+    "eslint": "^10.7.0",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "^3.9.5",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.63.0",
+    "vitest": "^4.1.10"
+  }
+}

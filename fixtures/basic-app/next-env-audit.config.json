@@ -1,0 +1,9 @@
+{
+  "allow": [
+    {
+      "route": "/static-allowlisted",
+      "var": "BUILD_INFO",
+      "reason": "intentional build-time stamp"
+    }
+  ]
+}
