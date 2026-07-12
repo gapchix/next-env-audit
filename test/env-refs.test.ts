@@ -53,12 +53,22 @@ describe('findClientPublicEnvRefs', () => {
 });
 
 describe('isFrameworkEnv', () => {
-  it.each(['NODE_ENV', 'NEXT_RUNTIME', 'NEXT_PUBLIC_X', '__NEXT_TEST', 'VERCEL_URL', 'PORT'])(
-    'ignores %s',
-    (name) => {
-      expect(isFrameworkEnv(name)).toBe(true);
-    },
-  );
+  it.each([
+    'NODE_ENV',
+    'NEXT_RUNTIME',
+    'NEXT_PUBLIC_X',
+    '__NEXT_TEST',
+    'VERCEL_URL',
+    'PORT',
+    // ecosystem diagnostics bundled via common libraries (found dogfooding
+    // on a real app: the `debug` package's process.env.DEBUG read)
+    'DEBUG',
+    'CI',
+    'NO_COLOR',
+    'FORCE_COLOR',
+  ])('ignores %s', (name) => {
+    expect(isFrameworkEnv(name)).toBe(true);
+  });
 
   it.each(['CMS_TOKEN', 'DATABASE_URL', 'MY_NEXT_THING'])('keeps %s', (name) => {
     expect(isFrameworkEnv(name)).toBe(false);

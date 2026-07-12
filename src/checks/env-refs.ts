@@ -51,13 +51,27 @@ export function findClientPublicEnvRefs(source: string): string[] {
   return [...names];
 }
 
-const FRAMEWORK_EXACT = new Set(['NODE_ENV', 'TZ', 'PORT', 'HOSTNAME']);
+const FRAMEWORK_EXACT = new Set([
+  'NODE_ENV',
+  'TZ',
+  'PORT',
+  'HOSTNAME',
+  // Ecosystem diagnostics read by ubiquitous bundled libraries (the `debug`
+  // package, color detection, CI detection) — toggles, never page data.
+  'DEBUG',
+  'CI',
+  'NO_COLOR',
+  'FORCE_COLOR',
+  'TERM',
+  'COLORTERM',
+]);
 const FRAMEWORK_PREFIXES = ['NEXT_', '__NEXT', '_NEXT', 'NODE_', 'VERCEL', 'TURBOPACK', 'npm_'];
 
 /**
- * Env vars owned by Next.js, Node or the platform — never worth reporting.
- * `NEXT_PUBLIC_*` is covered by the `NEXT_` prefix on the server side because
- * public vars are the client-bake check's domain.
+ * Env vars owned by Next.js, Node, the platform, or ubiquitous library
+ * diagnostics — never worth reporting. `NEXT_PUBLIC_*` is covered by the
+ * `NEXT_` prefix on the server side because public vars are the client-bake
+ * check's domain.
  */
 export function isFrameworkEnv(name: string): boolean {
   if (FRAMEWORK_EXACT.has(name)) return true;

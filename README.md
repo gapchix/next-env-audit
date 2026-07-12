@@ -26,7 +26,7 @@ Output for a build with exactly this bug:
 
 ```
 next-env-audit v0.1.0
-audited /path/to/app/.next — 5 routes, 4 prerendered
+audited /path/to/app/.next — 6 routes, 5 prerendered
 
 server bake · env vars read by statically prerendered routes
 
@@ -35,6 +35,10 @@ server bake · env vars read by statically prerendered routes
      data — while the build stayed green.
      fix: `export const dynamic = 'force-dynamic'`, set CMS_TOKEN at build time,
      or allowlist it in next-env-audit.config.json if the bake is intentional.
+
+  ⚠  /posts/[slug] reads POSTS_SOURCE_URL — value frozen at build time
+     Whatever value the variable had at build time is baked into the prerendered page.
+     Rotating or changing it does not update this route without a rebuild.
 
 client bake · NEXT_PUBLIC_* values in browser bundles
 
@@ -49,7 +53,7 @@ client bake · NEXT_PUBLIC_* values in browser bundles
 allowlisted
   ✓  /static-allowlisted · BUILD_INFO — intentional build-time stamp
 
-1 error · 1 warning · 1 info · 1 allowlisted
+1 error · 2 warnings · 1 info · 1 allowlisted
 report-only mode — pass --fail-on server-bake,client-bake to gate CI
 ```
 

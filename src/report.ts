@@ -8,6 +8,7 @@ export interface ReportOptions {
 }
 
 const SYMBOLS: Record<Severity, string> = { error: '✖', warning: '⚠', info: 'ℹ' };
+const SEVERITY_RANK: Record<Severity, number> = { error: 0, warning: 1, info: 2 };
 
 function paint(severity: Severity, text: string): string {
   if (severity === 'error') return pc.red(text);
@@ -108,7 +109,9 @@ export function renderReport(result: AuditResult, options: ReportOptions): strin
     { title: 'client bake · NEXT_PUBLIC_* values in browser bundles', check: 'client-bake' },
   ];
   for (const section of sections) {
-    const findings = result.findings.filter((finding) => finding.check === section.check);
+    const findings = result.findings
+      .filter((finding) => finding.check === section.check)
+      .sort((a, b) => SEVERITY_RANK[a.severity] - SEVERITY_RANK[b.severity]);
     if (findings.length === 0) continue;
     lines.push('');
     lines.push(pc.bold(section.title));

@@ -3,12 +3,13 @@
 Tiny Next.js app used by the integration tests. One route per scenario the
 auditor must classify correctly:
 
-| Route                 | Scenario                                                                                    | Expected result                               |
-| --------------------- | ------------------------------------------------------------------------------------------- | --------------------------------------------- |
-| `/static-secret`      | static route reading `CMS_TOKEN` (unset)                                                    | server-bake **error** — the original incident |
-| `/static-public`      | client component reading `NEXT_PUBLIC_API_URL` (set) and `NEXT_PUBLIC_MISSING_FLAG` (unset) | client-bake **inlined** + **not-inlined**     |
-| `/dynamic-secret`     | `force-dynamic` route reading `CMS_TOKEN`                                                   | no finding                                    |
-| `/static-allowlisted` | static route reading `BUILD_INFO`, allowlisted in config                                    | reported as allowlisted                       |
+| Route                 | Scenario                                                                                    | Expected result                                    |
+| --------------------- | ------------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| `/static-secret`      | static route reading `CMS_TOKEN` (unset)                                                    | server-bake **error** — the original incident      |
+| `/static-public`      | client component reading `NEXT_PUBLIC_API_URL` (set) and `NEXT_PUBLIC_MISSING_FLAG` (unset) | client-bake **inlined** + **not-inlined**          |
+| `/posts/[slug]`       | `generateStaticParams` pages reading `POSTS_SOURCE_URL` (set)                               | server-bake **warning**, attributed to the pattern |
+| `/dynamic-secret`     | `force-dynamic` route reading `CMS_TOKEN`                                                   | no finding                                         |
+| `/static-allowlisted` | static route reading `BUILD_INFO`, allowlisted in config                                    | reported as allowlisted                            |
 
 Build it from the repo root:
 

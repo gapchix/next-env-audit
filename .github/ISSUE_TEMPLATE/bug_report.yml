@@ -1,0 +1,45 @@
+name: Bug report
+description: A wrong finding, a missed bake, or a crash
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks! Build-shape bugs are this tool's whole world — the more of your
+        real build output you can share, the faster this gets fixed.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What did the audit report, and what did you expect instead?
+      placeholder: e.g. "/pricing is flagged as server-bake but it's force-dynamic"
+    validations:
+      required: true
+  - type: textarea
+    id: json
+    attributes:
+      label: --json output
+      description: Paste the output of `npx next-env-audit --json` (redact values if needed — names and routes are what matter).
+      render: json
+  - type: input
+    id: next-version
+    attributes:
+      label: Next.js version
+      placeholder: e.g. 16.2.10
+    validations:
+      required: true
+  - type: dropdown
+    id: bundler
+    attributes:
+      label: Bundler
+      options:
+        - Turbopack (default in Next 16)
+        - webpack
+        - not sure
+    validations:
+      required: true
+  - type: input
+    id: router
+    attributes:
+      label: Router and relevant route shape
+      placeholder: e.g. App Router, /blog/[slug] with generateStaticParams

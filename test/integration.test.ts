@@ -70,10 +70,23 @@ describe.skipIf(!fixtureBuilt)('integration: real next build', () => {
     expect(finding?.presentAtAudit).toBe(false);
   });
 
+  it('attributes generateStaticParams pages to their route pattern', () => {
+    const route = result!.routes.find((r) => r.route === '/posts/[slug]');
+    expect(route?.prerendered).toBe(true);
+    expect(route?.prerenderedPaths.sort()).toEqual(['/posts/first-post', '/posts/second-post']);
+    const finding = result!.findings.find(
+      (f): f is ServerBakeFinding =>
+        f.check === 'server-bake' && f.route === '/posts/[slug]' && f.var === 'POSTS_SOURCE_URL',
+    );
+    expect(finding?.severity).toBe('warning');
+    expect(finding?.presentAtAudit).toBe(true);
+  });
+
   it('produces no false positives beyond the designed findings', () => {
     const unexpected = result!.findings.filter(
       (f) =>
         !(f.check === 'server-bake' && f.var === 'CMS_TOKEN' && f.route === '/static-secret') &&
+        !(f.check === 'server-bake' && f.var === 'POSTS_SOURCE_URL') &&
         !(f.check === 'client-bake' && f.var === 'NEXT_PUBLIC_API_URL') &&
         !(f.check === 'client-bake' && f.var === 'NEXT_PUBLIC_MISSING_FLAG'),
     );

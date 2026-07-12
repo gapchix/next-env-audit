@@ -25,8 +25,12 @@ Initial release.
 - Configuration via `next-env-audit.config.json`, `.nextenvauditrc.json`, or a
   `nextEnvAudit` package.json key: `allow` (with reasons), `ignore`, `failOn`,
   all with `*` wildcard support.
-- Fixture Next.js app reproducing the original incident, wired into an
-  integration test suite that runs against `next@latest` and `next@canary`.
+- Fixture Next.js app reproducing the original incident (including a
+  `generateStaticParams` route), wired into an integration test suite that
+  runs against `next@latest` and `next@canary`.
+- Built-in ignore list covering framework internals and common ecosystem
+  diagnostics (`DEBUG`, `CI`, color/terminal toggles) — tuned by dogfooding on
+  a real production app.
 
 [Unreleased]: https://github.com/gapchix/next-env-audit/compare/v0.1.0...HEAD
 [0.1.0]: https://github.com/gapchix/next-env-audit/releases/tag/v0.1.0

@@ -1,0 +1,16 @@
+name: Feature request
+description: A check, output, or integration you're missing
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What env-var failure mode or workflow gap are you hitting?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+      description: What should the tool detect or do? A sketch of the report line you'd want to see is perfect.
