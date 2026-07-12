@@ -260,3 +260,7 @@ Bug reports with a repro (or just a pasted `--json` output) are gold — the who
 ## License
 
 [MIT](./LICENSE)
+
+---
+
+Built by [Gapchix](https://gapchix.io) — more tools and build logs at [gapchix.io/projects](https://gapchix.io/projects).
