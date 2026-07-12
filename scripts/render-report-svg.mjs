@@ -42,6 +42,7 @@ function parseAnsiLine(line) {
   };
   for (let i = 0; i < line.length; i++) {
     if (line[i] === '\x1b') {
+      // eslint-disable-next-line no-control-regex -- parsing ANSI escapes is this script's job
       const match = /^\x1b\[(\d+)m/.exec(line.slice(i));
       if (match) {
         flush();
