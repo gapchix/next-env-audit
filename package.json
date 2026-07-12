@@ -15,7 +15,7 @@
     "build"
   ],
   "license": "MIT",
-  "author": "Vladislav Gapchinsky",
+  "author": "Vladislav Gapchinsky (https://gapchix.io)",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/gapchix/next-env-audit.git"
